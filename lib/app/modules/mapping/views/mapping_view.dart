@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_map/flutter_map.dart';
-
 import '../controllers/mapping_controller.dart';
 
 class MappingView extends GetView<MappingController> {
@@ -11,9 +10,10 @@ class MappingView extends GetView<MappingController> {
     return Scaffold(
       appBar: AppBar(title: Text("Peta Lokasi")),
       body: Obx(() {
-        print(">>> Peta dibuild ulang: ${controller.currentLocation.value}");
+        print(">>> Current: ${controller.currentLocation.value}");
+
         return FlutterMap(
-          mapController: controller.mapController, // kontrol peta
+          mapController: controller.mapController,
           options: MapOptions(
             initialCenter: controller.currentLocation.value,
             initialZoom: 14.0,
@@ -23,27 +23,30 @@ class MappingView extends GetView<MappingController> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.app',
             ),
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: controller.currentLocation.value,
-                  width: 80,
-                  height: 80,
-                  child: const Icon(
-                    Icons.location_pin,
-                    color: Colors.red,
-                    size: 40,
+
+            // Tampilkan marker HANYA jika lokasi user sudah didapat
+            if (controller.locationLoaded.value)
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point: controller.currentLocation.value,
+                    width: 80,
+                    height: 80,
+                    child: const Icon(
+                      Icons.location_pin,
+                      color: Colors.red,
+                      size: 40,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
           ],
         );
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          print(">>> Tombol lokasi diklik");
-          await controller.getUserLocation(); // ambil ulang lokasi
+          print(">>> Klik tombol lokasi");
+          await controller.getUserLocation();
         },
         child: const Icon(Icons.my_location),
       ),
